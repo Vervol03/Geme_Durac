@@ -42,25 +42,25 @@ class FrenchDeck:
     def ran_game(self):
         if self.move == "player":
             while True:
-                if self.hod_pleyer():
-                    print("Знову ваш ход!"); break
-                if input("Підкинути (Y): ").upper()=="Y":
-                    if not self.throw_up_player():
-                        print("Вам нема чим підкидати!")
-                        print("Ходить Бот ви б'єтеся!")
+                if self.hod_pleyer(): break
+                if self.throw_up_player():
+                    if not input("Підкинути (Y): ").upper()=="Y":
                         self.move = "bot"; break
-                else: self.move = "bot"; break
+                else: 
+                    print("Вам нема що підкидати!")
+                    self.move = "bot"; break
         else:
             while True:
-                if self.hod_bot():
-                    print("Знову ходить Бот ви б'єтеся!");break
+                if self.hod_bot(): break
                 if not self.throw_up_bot():
                     print("Боту нема що підкидати!")
-                    print("Ваш ход!")
                     self.move = "player"; break
 
+        print('##############################################')
+        print("\tВАШ ХОД!")if self.move=="player"else print("\tХОДИТЬ БОТ!")
+
         self.table = []; self.new_cards()
-        if (self.player==[] or self.bot==[]) and self.cards==[]:
+        if (self.player==[] or self.bot==[])and self.cards==[]:
             self.game_over(); return True
         else: self.new_cards()
         self.print_inf(); return False
@@ -87,7 +87,8 @@ class FrenchDeck:
             
     def hod_pleyer(self):
         while True:
-            p = input("Введіть чим бажаете походити: ")
+            if self.table == []: p = input("Введіть чим бажаете походити: ")
+            else: p = input("Введіть що бажаете підкинути: ")
             if p in self.player: 
                 if self.table == []: break
                 elif self.check(p): break
@@ -133,13 +134,14 @@ class FrenchDeck:
                 for i in self.bot:
                     if self.ind(i)<min: min = self.ind(i)
                 b = self.deck2[min]
+            print("Бот ходить -", b)
         else:
             for i in self.bot:
                 for j in self.table:
                     if i[0]!=self.trum[0] and i[1:]==j[1:]: b = i
+            print("Бот підкида -", b)
         self.bot.remove(b)
         self.table.append(b)
-        print("Бот походив -", b)
         if not self.no_options(b):
             print("Нажаль вам нема чим побити!")
             self.player += self.table; self.table = []
@@ -163,7 +165,7 @@ class FrenchDeck:
         for i in self.player:
             if i[0]==b[0] and self.ind(i)>self.ind(b): return True
         for i in self.player:
-            if i[0]==self.trum[0] and self.ind(i)>self.ind(b): return True
+            if i[0]==self.trum[0] and b[0]!=self.trum[0]: return True
         return False
 
     def game_over(self):
